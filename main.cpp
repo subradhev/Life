@@ -6,7 +6,7 @@ int height;
 
 int main() {
 	char in;
-	float delay_min = 0.5;
+	float delay_min = 0.05;
 	
 	sf::Color col;
 	
@@ -29,6 +29,7 @@ int main() {
 	}
 	
 	// TODO: Create function for this along with other init methods
+	// TODO: Implement a size limit
 	std::cout << "Cell size?" << std::endl;
 	std::cout << ">> ";
 	
@@ -47,7 +48,6 @@ int main() {
 	
 	sf::RenderWindow window(sf::VideoMode(size * width, size * height), "Conway's Game of Life", sf::Style::Close | sf::Style::Titlebar);
 	
-	// TODO: DONT FORGET DEALLOC! - SHOULD BE GOOD NOW
 	bool** grid = new bool*[width];
 	char** grid_nbors = new char*[width];
 	char** grid_nbors_buffer = new char*[width];
@@ -75,6 +75,9 @@ int main() {
 	bool mouse_down = false;
 	int block_x;
 	int block_y;
+	
+	int old_x;
+	int old_y;
 	while (wait) {
 		while (window.pollEvent(event)) {
 			if (event.type == sf::Event::Closed) {
@@ -100,39 +103,43 @@ int main() {
 				
 				//COORDINATE PRINT IF NEEDED
 				
-				if (block_x >= 0 && block_x < width && block_y >= 0 && block_y < height) {
-					if (grid[block_x][block_y]) {
-						grid[block_x][block_y] = false;
-						neighbor_subtract(grid_nbors, block_x, block_y);
-						neighbor_subtract(grid_nbors_buffer, block_x, block_y);
-						col = sf::Color::Black;
-					} else {
-						grid[block_x][block_y] = true;
-						neighbor_add(grid_nbors, block_x, block_y);
-						neighbor_add(grid_nbors_buffer, block_x, block_y);
-						col = sf::Color::White;
+				if (not (block_x == old_x && block_y == old_y)) {
+					old_x = block_x;
+					old_y = block_y;
+					if (block_x >= 0 && block_x < width && block_y >= 0 && block_y < height) {
+						if (grid[block_x][block_y]) {
+							grid[block_x][block_y] = false;
+							neighbor_subtract(grid_nbors, block_x, block_y);
+							neighbor_subtract(grid_nbors_buffer, block_x, block_y);
+							col = sf::Color::Black;
+						} else {
+							grid[block_x][block_y] = true;
+							neighbor_add(grid_nbors, block_x, block_y);
+							neighbor_add(grid_nbors_buffer, block_x, block_y);
+							col = sf::Color::White;
+						}
+						
+						/*
+						cell_shape[0].position = sf::Vector2f((float) size * block_x, (float) size * block_y);
+						cell_shape[1].position = sf::Vector2f((float) size * block_x, (float) size * block_y + (float) size);
+						cell_shape[2].position = sf::Vector2f((float) size * block_x + (float) size, (float) size * block_y + (float) size);
+						cell_shape[3].position = sf::Vector2f((float) size * block_x + (float) size, (float) size * block_y);
+						
+						for (int i = 0; i < 4; i++) {
+							cell_shape[i].color = col;
+						}
+						*/
+						
+						window.clear();
+						display(cell_shape ,grid, window);
+						draw_borders(window);
+						
+						//window.draw(cell_shape);
+						window.display();
+						
+						
+						//Consider using delta time?
 					}
-					
-					/*
-					cell_shape[0].position = sf::Vector2f((float) size * block_x, (float) size * block_y);
-					cell_shape[1].position = sf::Vector2f((float) size * block_x, (float) size * block_y + (float) size);
-					cell_shape[2].position = sf::Vector2f((float) size * block_x + (float) size, (float) size * block_y + (float) size);
-					cell_shape[3].position = sf::Vector2f((float) size * block_x + (float) size, (float) size * block_y);
-					
-					for (int i = 0; i < 4; i++) {
-						cell_shape[i].color = col;
-					}
-					*/
-					
-					window.clear();
-					display(cell_shape ,grid, window);
-					draw_borders(window);
-					
-					//window.draw(cell_shape);
-					window.display();
-					
-					
-					//Consider using delta time?
 				}
 			}
 		}
@@ -140,6 +147,7 @@ int main() {
 	
 	sf::Clock clock;
 	float time;
+	bool run = true;
 	while (window.isOpen()) {
 		while (window.pollEvent(event)) {
 			if (event.type == sf::Event::Closed) {
@@ -147,17 +155,28 @@ int main() {
 			}
 			
 			if (event.type == sf::Event::KeyPressed) {
-				life_update(grid, grid_nbors, grid_nbors_buffer);
-		
-				window.clear();
-				display(cell_shape, grid, window);
-				draw_borders(window);
-				window.display();
+				if (event.key.code == sf::Keyboard::Space) {
+					if (run) {
+						run = false;
+					} else {
+						run = true;
+					}
+				} else if (event.key.code == sf::Keyboard::Right) {
+					if (delay_min > 0.06) {
+						delay_min -= 0.05;
+					}
+					
+					std::cout << delay_min << std::endl;
+				} else if (event.key.code == sf::Keyboard::Left) {
+					delay_min += 0.05; // ADD A MAX MAYBE?
+					
+					std::cout << delay_min << std::endl;
+				}
 			}
 		}
 		
 		time = clock.getElapsedTime().asSeconds();
-		if (time > delay_min) {
+		if (time > delay_min && run) {
 			life_update(grid, grid_nbors, grid_nbors_buffer);
 		
 			window.clear();
