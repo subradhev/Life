@@ -18,4 +18,6 @@ int life_update(bool** grid, char** grid_nbors, char** grid_nbors_buffer);
 int dealloc(bool** grid, char** grid_nbors, char** grid_nbors_buffer);
 int draw_borders(sf::RenderWindow& win);
 
+int manual();
+
 #endif

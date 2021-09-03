@@ -22,7 +22,7 @@ int main() {
 		std::cout << "TODO. Exiting..." << std::endl;
 		return 0;
 	} else if (in == 'm') {
-		// Continue
+		manual();
 	} else {
 		std::cout << "Invalid input. Exiting..." << std::endl;
 		return 0;
@@ -30,20 +30,6 @@ int main() {
 	
 	// TODO: Create function for this along with other init methods
 	// TODO: Implement a size limit
-	std::cout << "Cell size?" << std::endl;
-	std::cout << ">> ";
-	
-	std::cin >> size;
-	
-	std::cout << "Height?" << std::endl;
-	std::cout << ">> ";
-	
-	std::cin >> height;
-	
-	std::cout << "Width?" << std::endl;
-	std::cout << ">> ";
-	
-	std::cin >> width;
 	//
 	
 	sf::RenderWindow window(sf::VideoMode(size * width, size * height), "Conway's Game of Life", sf::Style::Close | sf::Style::Titlebar);

@@ -139,3 +139,21 @@ int life_update(bool** grid, char** grid_nbors, char** grid_nbors_buffer) {
 	
 	return 0;
 }
+
+int manual() {
+	std::cout << "Cell size?" << std::endl;
+	std::cout << ">> ";
+	
+	std::cin >> size;
+	
+	std::cout << "Height?" << std::endl;
+	std::cout << ">> ";
+	
+	std::cin >> height;
+	
+	std::cout << "Width?" << std::endl;
+	std::cout << ">> ";
+	
+	std::cin >> width;
+	return 0;
+}
